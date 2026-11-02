@@ -1,38 +1,12 @@
+-- schemas for the three missing tables
+SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME IN ('asqa_rmasignificantevent','asqa_thirdpartyarrangements','asqa_studentmanagementsystem')
+ORDER BY TABLE_NAME, ORDINAL_POSITION;
 
--- 1. real targets of the pointers I couldn't name
-SELECT v.fk, v.target, COUNT(*) AS n
-FROM dbo.asqa_registrationsubmission s
-CROSS APPLY (VALUES
- ('rmasignificantevent', s.asqa_rmasignificantevent_entitytype),
- ('thirdpartyarrangements', s.asqa_thirdpartyarrangements_entitytype),
- ('studentmangementsystem', s.asqa_studentmangementsystem_entitytype),
- ('rtoscopeapplication', s.asqa_rtoscopeapplication_entitytype),
- ('rtoscopeitem', s.asqa_rtoscopeitem_entitytype),
- ('contact', s.asqa_contact_entitytype),
- ('rtofppd', s.asqa_rtofppd_entitytype),
- ('rtodelegationid', s.asqa_rtodelegationid_entitytype),
- ('rtoenquiry', s.asqa_rtoenquiry_entitytype),
- ('rtofinancialstatus', s.asqa_rtofinancialstatus_entitytype),
- ('rtodeliverylocation', s.asqa_rtodeliverylocation_entitytype)
-) v(fk, target)
-WHERE v.target IS NOT NULL AND s.IsDelete IS NULL
-GROUP BY v.fk, v.target ORDER BY v.fk;
-
--- 2. do children point up to many submissions?
-SELECT 'rtoscope' AS child, COUNT(*) AS total, COUNT(asqa_registrationsubmission) AS has_parent,
-       COUNT(DISTINCT asqa_registrationsubmission) AS distinct_parents
-FROM dbo.asqa_rtoscope WHERE IsDelete IS NULL
-UNION ALL
-SELECT 'rtopublishrequest', COUNT(*), COUNT(asqa_submission), COUNT(DISTINCT asqa_submission)
-FROM dbo.asqa_rtopublishrequest WHERE IsDelete IS NULL
-UNION ALL
-SELECT 'rtofitandproperperson', COUNT(*), COUNT(asqa_relatedsubmission), COUNT(DISTINCT asqa_relatedsubmission)
-FROM dbo.asqa_rtofitandproperperson WHERE IsDelete IS NULL;
-
--- 3. are the orphan renewals unsubmitted drafts?
-SELECT r.Id, r.createdon, r.statecode, r.asqa_renewalsubmitted, r.asqa_renewaltype, r.asqa_setrenewalduedate
-FROM dbo.asqa_rtorenewal r
-WHERE r.IsDelete IS NULL
-  AND NOT EXISTS (SELECT 1 FROM dbo.asqa_registrationsubmission s
-                  WHERE s.asqa_rtorenewal = r.Id AND s.IsDelete IS NULL)
-ORDER BY r.createdon;
+-- which submission types spawn many FPP records
+SELECT s.asqa_registrationsubmissiontypename, f.asqa_relatedsubmission, COUNT(*) AS fpp_rows
+FROM dbo.asqa_rtofitandproperperson f
+JOIN dbo.asqa_registrationsubmission s ON s.Id = f.asqa_relatedsubmission
+WHERE f.IsDelete IS NULL AND s.IsDelete IS NULL
+GROUP BY s.asqa_registrationsubmissiontypename, f.asqa_relatedsubmission;

@@ -1,8 +1,1 @@
-SELECT asqa_relatedsubmission_entitytype AS target,
-       COUNT(*) AS fpp_rows,
-       COUNT(DISTINCT asqa_relatedsubmission) AS parents,
-       COUNT(asqa_rtorenewal) AS has_renewal,
-       COUNT(asqa_rtoaccountcontactrole) AS has_contact_role
-FROM dbo.asqa_rtofitandproperperson
-WHERE IsDelete IS NULL
-GROUP BY asqa_relatedsubmission_entitytype;
+[{"data":[[null,"10","0","0","10"],["asqa_registrationsubmissiontype","24","2","4","19"]],"schema":[{"columnName":"target","ordinal":0,"dataTypeName":"varchar"},{"columnName":"fpp_rows","ordinal":1,"dataTypeName":"int"},{"columnName":"parents","ordinal":2,"dataTypeName":"int"},{"columnName":"has_renewal","ordinal":3,"dataTypeName":"int"},{"columnName":"has_contact_role","ordinal":4,"dataTypeName":"int"}]}]

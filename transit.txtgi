@@ -1,12 +1,8 @@
--- schemas for the three missing tables
-SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE
-FROM INFORMATION_SCHEMA.COLUMNS
-WHERE TABLE_NAME IN ('asqa_rmasignificantevent','asqa_thirdpartyarrangements','asqa_studentmanagementsystem')
-ORDER BY TABLE_NAME, ORDINAL_POSITION;
-
--- which submission types spawn many FPP records
-SELECT s.asqa_registrationsubmissiontypename, f.asqa_relatedsubmission, COUNT(*) AS fpp_rows
-FROM dbo.asqa_rtofitandproperperson f
-JOIN dbo.asqa_registrationsubmission s ON s.Id = f.asqa_relatedsubmission
-WHERE f.IsDelete IS NULL AND s.IsDelete IS NULL
-GROUP BY s.asqa_registrationsubmissiontypename, f.asqa_relatedsubmission;
+SELECT asqa_relatedsubmission_entitytype AS target,
+       COUNT(*) AS fpp_rows,
+       COUNT(DISTINCT asqa_relatedsubmission) AS parents,
+       COUNT(asqa_rtorenewal) AS has_renewal,
+       COUNT(asqa_rtoaccountcontactrole) AS has_contact_role
+FROM dbo.asqa_rtofitandproperperson
+WHERE IsDelete IS NULL
+GROUP BY asqa_relatedsubmission_entitytype;

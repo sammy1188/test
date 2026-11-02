@@ -1,1 +1,8 @@
-[{"data":[[null,"10","0","0","10"],["asqa_registrationsubmissiontype","24","2","4","19"]],"schema":[{"columnName":"target","ordinal":0,"dataTypeName":"varchar"},{"columnName":"fpp_rows","ordinal":1,"dataTypeName":"int"},{"columnName":"parents","ordinal":2,"dataTypeName":"int"},{"columnName":"has_renewal","ordinal":3,"dataTypeName":"int"},{"columnName":"has_contact_role","ordinal":4,"dataTypeName":"int"}]}]
+SELECT Id, asqa_newcolumn AS type_name, asqa_typecode, statecode, statuscode
+FROM dbo.asqa_registrationsubmissiontype
+WHERE IsDelete IS NULL
+ORDER BY asqa_newcolumn;
+
+SELECT TOP 10 asqa_newcolumn, asqa_regsubid, asqa_requestreferenceid
+FROM dbo.asqa_registrationsubmission
+WHERE IsDelete IS NULL;

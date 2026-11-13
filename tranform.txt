@@ -1,0 +1,127 @@
+if is_applied(spark, METADATA_BASE_PATH, MIGRATION_ID):
+    print(f"Already applied: {MIGRATION_ID}")
+else:
+    now = datetime.now(timezone.utc)
+
+    is_active = True
+    created_utc = now
+    updated_utc = now
+
+    # =================================================================
+    # PART 1: Transform Mappings
+    # =================================================================
+
+    NOTEBOOK_TO_EXECUTE_NONE = None
+    JSON_CONFIG_NONE = None
+    SOURCE_ID_NONE = None
+    SOURCE_ENTITY_NONE = None
+
+    # transform_entity_mappings contains the metadata entries to map ARMS to Clease
+    # and cleanse to unify
+    # Parameter 1 : Binding Id
+    # Parameter 2 : Step Name
+    # Parameter 3 : Source Id (only relevant for ARMS cleanse, for unifcation this is set to SOURCE_ID_NONE)
+    # Parameter 4 : Order you want the transform to run
+    # Parameter 5 : Source entity name
+    # Parameter 6 : Target entity name
+    # Parameter 7 : Any custom notebook to run for the transformation only if relevant
+    # Parameter 8 : name of JSON mapping file to map fields and run relevant validations at a field level
+
+    transform_entity_mappings = [
+        # Ingest and Cleanse - ARMS
+     
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 1, "Account", "Account", NOTEBOOK_TO_EXECUTE_NONE, "account.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 2, "asqa_AccreditedUnit", "asqa_AccreditedUnit", NOTEBOOK_TO_EXECUTE_NONE, "asqa_accreditedunit.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 3, "asqa_addresslocation", "asqa_addresslocation", NOTEBOOK_TO_EXECUTE_NONE, "asqa_addresslocation.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 4, "asqa_AddressMaster", "asqa_AddressMaster", NOTEBOOK_TO_EXECUTE_NONE, "asqa_addressmaster.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 5, "asqa_anzscocode", "asqa_anzscocode", NOTEBOOK_TO_EXECUTE_NONE, "asqa_anzscocode.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 6, "asqa_aqfqualification", "asqa_aqfqualification", NOTEBOOK_TO_EXECUTE_NONE, "asqa_aqfqualification.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 7, "asqa_ascedfieldofeducation", "asqa_ascedfieldofeducation", NOTEBOOK_TO_EXECUTE_NONE, "asqa_ascedfieldofeducation.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 8, "asqa_ascedlevelofeducation", "asqa_ascedlevelofeducation", NOTEBOOK_TO_EXECUTE_NONE, "asqa_ascedlevelofeducation.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 9, "asqa_CaseOrigin", "asqa_CaseOrigin", NOTEBOOK_TO_EXECUTE_NONE, "asqa_caseorigin.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 10, "asqa_Country", "asqa_Country", NOTEBOOK_TO_EXECUTE_NONE, "asqa_country.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 11, "asqa_course", "asqa_course", NOTEBOOK_TO_EXECUTE_NONE, "asqa_course.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 12, "asqa_location", "asqa_location", NOTEBOOK_TO_EXECUTE_NONE, "asqa_location.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 13, "asqa_locationtype", "asqa_locationtype", NOTEBOOK_TO_EXECUTE_NONE, "asqa_locationtype.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 14, "asqa_oscacode", "asqa_oscacode", NOTEBOOK_TO_EXECUTE_NONE, "asqa_oscacode.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 15, "asqa_qualification", "asqa_qualification", NOTEBOOK_TO_EXECUTE_NONE, "asqa_qualification.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 16, "asqa_Registration", "asqa_Registration", NOTEBOOK_TO_EXECUTE_NONE, "asqa_registration.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 17, "asqa_registrationstatus", "asqa_registrationstatus", NOTEBOOK_TO_EXECUTE_NONE, "asqa_registrationstatus.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 18, "asqa_regulation", "asqa_regulation", NOTEBOOK_TO_EXECUTE_NONE, "asqa_regulation.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 19, "asqa_regulationitem", "asqa_regulationitem", NOTEBOOK_TO_EXECUTE_NONE, "asqa_regulationitem.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 20, "asqa_reviewstatus", "asqa_reviewstatus", NOTEBOOK_TO_EXECUTE_NONE, "asqa_reviewstatus.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 21, "asqa_rtoaccountcontactrole", "asqa_rtoaccountcontactrole", NOTEBOOK_TO_EXECUTE_NONE, "asqa_rtoaccountcontactrole.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 22, "asqa_RTOAddress", "asqa_RTOAddress", NOTEBOOK_TO_EXECUTE_NONE, "asqa_rtoaddress.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 23, "asqa_RTOBusinessnames", "asqa_RTOBusinessnames", NOTEBOOK_TO_EXECUTE_NONE, "asqa_rtobusinessnames.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 24, "asqa_RTODeliveryloc", "asqa_RTODeliveryloc", NOTEBOOK_TO_EXECUTE_NONE, "asqa_rtodeliveryloc.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 25, "asqa_RTOEnquiryDetails", "asqa_RTOEnquiryDetails", NOTEBOOK_TO_EXECUTE_NONE, "asqa_rtoenquirydetails.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 26, "asqa_rtoroles", "asqa_rtoroles", NOTEBOOK_TO_EXECUTE_NONE, "asqa_rtoroles.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 27, "asqa_RTOScope", "asqa_RTOScope", NOTEBOOK_TO_EXECUTE_NONE, "asqa_rtoscope.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 28, "asqa_RTOScopeItem", "asqa_RTOScopeItem", NOTEBOOK_TO_EXECUTE_NONE, "asqa_rtoscopeitem.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 29, "asqa_SkillSet", "asqa_SkillSet", NOTEBOOK_TO_EXECUTE_NONE, "asqa_skillset.json"),   
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 30, "asqa_stakeholdertype", "asqa_stakeholdertype", NOTEBOOK_TO_EXECUTE_NONE, "asqa_stakeholdertype.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 31, "asqa_StateTerritory", "asqa_StateTerritory", NOTEBOOK_TO_EXECUTE_NONE, "asqa_stateterritory.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 32, "asqa_TrainingPackage", "asqa_TrainingPackage", NOTEBOOK_TO_EXECUTE_NONE, "asqa_trainingpackage.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 33, "asqa_unit", "asqa_unit", NOTEBOOK_TO_EXECUTE_NONE, "asqa_unit.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 34, "businessunit", "businessunit", NOTEBOOK_TO_EXECUTE_NONE, "businessunit.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 35, "Contact", "Contact", NOTEBOOK_TO_EXECUTE_NONE, "contact.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 36, "processstage", "processstage", NOTEBOOK_TO_EXECUTE_NONE, "processstage.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 37, "team", "team", NOTEBOOK_TO_EXECUTE_NONE, "team.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 38, "systemuser", "systemuser", NOTEBOOK_TO_EXECUTE_NONE, "systemuser.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 39, "transactioncurrency", "transactioncurrency", NOTEBOOK_TO_EXECUTE_NONE, "transactioncurrency.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 40, "asqa_rtoscopeitemdeliveryloc", "asqa_rtoscopeitemdeliveryloc", NOTEBOOK_TO_EXECUTE_NONE, "asqa_rtoscopeitemdeliveryloc.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 41, "stringmap", "stringmap", NOTEBOOK_TO_EXECUTE_NONE, "stringmap.json"),
+        (BINDING_SILVER_ARMS_DIRECT_INGEST_ID, STEP_SILVER_ARMS_DIRECT_INGEST, SOURCE_ARMS_ID, 42, "owner", "owner", NOTEBOOK_TO_EXECUTE_NONE, "owner.json"),
+
+         # Unify Master
+
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 1, "asqa_AccreditedUnit", "accredited_unit", NOTEBOOK_TO_EXECUTE_NONE, "accredited_unit.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 2, "asqa_addresslocation", "address_location", NOTEBOOK_TO_EXECUTE_NONE, "address_location.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 3, "asqa_AddressMaster", "address_master", NOTEBOOK_TO_EXECUTE_NONE, "address_master.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 4, "asqa_anzscocode", "anzsco_code", NOTEBOOK_TO_EXECUTE_NONE, "anzsco_code.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 5, "asqa_aqfqualification", "aqf_qualification", NOTEBOOK_TO_EXECUTE_NONE, "aqf_qualification.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 6, "asqa_ascedfieldofeducation", "asced_field_of_education", NOTEBOOK_TO_EXECUTE_NONE, "asced_field_of_education.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 7, "asqa_ascedlevelofeducation", "asced_level_of_education", NOTEBOOK_TO_EXECUTE_NONE, "asced_level_of_education.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 8, "asqa_CaseOrigin", "case_origin", NOTEBOOK_TO_EXECUTE_NONE, "case_origin.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 9, "asqa_Country", "country", NOTEBOOK_TO_EXECUTE_NONE, "country.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 10, "asqa_course", "course", NOTEBOOK_TO_EXECUTE_NONE, "course.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 11, "asqa_location", "location", NOTEBOOK_TO_EXECUTE_NONE, "location.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 12, "asqa_locationtype", "location_type", NOTEBOOK_TO_EXECUTE_NONE, "location_type.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 13, "asqa_oscacode", "osca_code", NOTEBOOK_TO_EXECUTE_NONE, "osca_code.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 14, "asqa_qualification", "qualification", NOTEBOOK_TO_EXECUTE_NONE, "qualification.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 15, "asqa_Registration", "registration", NOTEBOOK_TO_EXECUTE_NONE, "registration.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 16, "asqa_registrationstatus", "registration_status", NOTEBOOK_TO_EXECUTE_NONE, "registration_status.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 17, "asqa_regulation", "regulation", NOTEBOOK_TO_EXECUTE_NONE, "regulation.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 18, "asqa_regulationitem", "regulation_item", NOTEBOOK_TO_EXECUTE_NONE, "regulation_item.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 19, "asqa_reviewstatus", "review_status", NOTEBOOK_TO_EXECUTE_NONE, "review_status.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 20, "asqa_rtoaccountcontactrole", "rto_account_contact_role", NOTEBOOK_TO_EXECUTE_NONE, "rto_account_contact_role.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 21, "asqa_RTOAddress", "rto_address", NOTEBOOK_TO_EXECUTE_NONE, "rto_address.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 22, "asqa_RTOBusinessnames", "rto_business_name", NOTEBOOK_TO_EXECUTE_NONE, "rto_business_name.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 23, "asqa_RTODeliveryloc", "rto_delivery_loc", NOTEBOOK_TO_EXECUTE_NONE, "rto_delivery_loc.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 24, "asqa_RTOEnquiryDetails", "rto_enquiry_detail", NOTEBOOK_TO_EXECUTE_NONE, "rto_enquiry_detail.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 25, "asqa_rtoroles", "rto_role", NOTEBOOK_TO_EXECUTE_NONE, "rto_role.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 26, "asqa_RTOScope", "rto_scope", NOTEBOOK_TO_EXECUTE_NONE, "rto_scope.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 27, "asqa_RTOScopeItem", "rto_scope_item", NOTEBOOK_TO_EXECUTE_NONE, "rto_scope_item.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 28, "asqa_SkillSet", "skill_set", NOTEBOOK_TO_EXECUTE_NONE, "skill_set.json"), 
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 29, "asqa_stakeholdertype", "stakeholder_type", NOTEBOOK_TO_EXECUTE_NONE, "stakeholder_type.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 30, "asqa_StateTerritory", "state_territory", NOTEBOOK_TO_EXECUTE_NONE, "state_territory.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 31, "asqa_TrainingPackage", "training_package", NOTEBOOK_TO_EXECUTE_NONE, "training_package.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 32, "asqa_unit", "unit", NOTEBOOK_TO_EXECUTE_NONE, "unit.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 33, "businessunit", "business_unit", NOTEBOOK_TO_EXECUTE_NONE, "business_unit.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 34, "Contact", "contact", NOTEBOOK_TO_EXECUTE_NONE, "contact.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 35, "processstage", "process_stage", NOTEBOOK_TO_EXECUTE_NONE, "process_stage.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 36, "team", "team", NOTEBOOK_TO_EXECUTE_NONE, "team.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 37, "systemuser", "system_user", NOTEBOOK_TO_EXECUTE_NONE, "system_user.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 38, "transactioncurrency", "transaction_currency", NOTEBOOK_TO_EXECUTE_NONE, "transaction_currency.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 39, "asqa_rtoscopeitemdeliveryloc", "rto_scope_item_delivery_loc", NOTEBOOK_TO_EXECUTE_NONE, "rto_scope_item_delivery_loc.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 40, "stringmap", "string_map", NOTEBOOK_TO_EXECUTE_NONE, "string_map.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 41, "owner", "owner", NOTEBOOK_TO_EXECUTE_NONE, "owner.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 42, "Account", "account", f"{SILVER_UNIFIED_NOTEBOOK_PATH}/nb_silver_master_account", "account.json"),
+        (BINDING_SILVER_MASTER_UNIFY_ID, STEP_SILVER_MASTER_UNIFY, SOURCE_ID_NONE, 43, None, "mdw_customer", f"{SILVER_UNIFIED_NOTEBOOK_PATH}/nb_silver_master_mdw_customer", None),
+
+        ]
+
+    insert_transform_entity_mappings(METADATA_BASE_PATH, transform_entity_mappings, VERSION_ID, spark)
+
+    record_migration(spark, METADATA_BASE_PATH, MIGRATION_ID, BINDING_STAGE_SILVER, NOTEBOOK_NAME, "succeeded")
+    print(f"Applied: {MIGRATION_ID}")
